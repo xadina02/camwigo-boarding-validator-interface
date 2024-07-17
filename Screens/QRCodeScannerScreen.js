@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, View, Button } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  View,
+  Button,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { CameraView, Camera } from "expo-camera";
+import BackArrow from "../assets/arrow-circle-left.png";
 import { useNavigation } from "@react-navigation/native";
 
 const QRCodeScannerScreen = () => {
@@ -32,18 +42,41 @@ const QRCodeScannerScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <CameraView
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barcodeScannerSettings={{
-          barcodeTypes: ["qr", "pdf417"],
-        }}
-        style={StyleSheet.absoluteFillObject}
-      />
-      {scanned && (
-        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
-      )}
-    </View>
+    <>
+      {/* <StatusBar backgroundColor="#070C35" /> */}
+      <View style={styles.backgroundDiv}>
+        <View style={styles.another}>
+          <View>
+            <TouchableOpacity
+              style={styles.backArrowContainer}
+              onPress={() => navigation.goBack()}
+              accessible={true}
+              accessibilityLabel="Back"
+              accessibilityHint="Navigates to the previous screen"
+            >
+              <Image source={BackArrow} style={styles.backArrow} />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.header}>Scanning</Text>
+        </View>
+      </View>
+
+      <View style={styles.container}>
+        <CameraView
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ["qr", "pdf417"],
+          }}
+          style={StyleSheet.absoluteFillObject}
+        />
+        {scanned && (
+          <Button
+            title={"Tap to Scan Again"}
+            onPress={() => setScanned(false)}
+          />
+        )}
+      </View>
+    </>
   );
 };
 
@@ -52,6 +85,34 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
+  },
+  backgroundDiv: {
+    height: "6%",
+  },
+  another: {
+    height: "100%",
+    backgroundColor: "#070C35",
+    // padding: 15,
+  },
+  backArrowContainer: {
+    position: "absolute",
+    left: 15,
+    top: "29%",
+    transform: [{ translateY: 8 }],
+    zIndex: 1, // Ensure it's on top
+  },
+  backArrow: {
+    width: 30,
+    height: 30,
+    tintColor: "#CDD2F8",
+  },
+  header: {
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 25,
+    fontWeight: "900",
+    marginTop: (0.2 * StatusBar.currentHeight),
+    // backgroundColor: 'bisque'
   },
 });
 
