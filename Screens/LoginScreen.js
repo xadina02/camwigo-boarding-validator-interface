@@ -23,7 +23,7 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
 
   const handleContinue = () => {
-    navigation.navigate("PaymentScreen")
+    navigation.navigate("HomeScreen")
   };
 
   return (
