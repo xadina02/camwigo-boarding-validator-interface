@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import useGetOrigins from "../utils/useGetOrigin";
 import useGetDestinations from "../utils/useGetDestination";
 import useGetSchedules from "../utils/useGetSchedule";
@@ -19,9 +18,8 @@ import useGetDates from "../utils/useGetDate";
 import { useNavigation } from "@react-navigation/native";
 import OriginIcon from "../assets/direct-down.png";
 import DestinationIcon from "../assets/location.png";
+import VehicleIcon from "../assets/bus.png";
 import ScheduleIcon from "../assets/clock2.png";
-import DateIcon from "../assets/calendar.png";
-import dummyData from "../dummy/tripDefinition";
 
 const SearchForm = ({ onSearch }) => {
   const navigation = useNavigation();
@@ -30,7 +28,7 @@ const SearchForm = ({ onSearch }) => {
   const { origins } = useGetOrigins(appToken);
   const [destinations, setDestinations] = useState([]);
   const [schedules, setSchedules] = useState([]);
-  const [dates, setDates] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [time, setTime] = useState("");
 
   const [selectedOrigin, setSelectedOrigin] = useState("");
@@ -39,14 +37,13 @@ const SearchForm = ({ onSearch }) => {
   const [selectedDestinationId, setSelectedDestinationId] = useState(0);
   const [selectedSchedule, setSelectedSchedule] = useState("");
   const [selectedScheduleId, setSelectedScheduleId] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState("");
+  const [selectedVehicleId, setSelectedVehicleId] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-
-  const [openDatePicker, setOpenDatePicker] = useState(false);
 
   // Fetch destinations whenever selectedOriginId changes
   const { destinations: fetchedDestinations } = useGetDestinations(
@@ -71,9 +68,9 @@ const SearchForm = ({ onSearch }) => {
     }
     setSelectedDestination("");
     setSelectedSchedule("");
-    setSelectedDate(null);
+    setSelectedVehicle("");
     setSchedules([]);
-    setDates([]);
+    setVehicles([]);
   }, [selectedOriginId, fetchedDestinations]);
 
   useEffect(() => {
@@ -83,46 +80,18 @@ const SearchForm = ({ onSearch }) => {
       setSchedules([]);
     }
     setSelectedSchedule("");
-    setSelectedDate(null);
-    setDates([]);
+    setSelectedVehicle("");
+    setVehicles([]);
   }, [selectedDestinationId, fetchedSchedules]);
 
   useEffect(() => {
     if (selectedScheduleId) {
-      setDates(fetchedDates);
+      setVehicles(fetchedDates);
     } else {
-      setDates([]);
+      setVehicles([]);
     }
-    setSelectedDate(null);
+    setSelectedVehicle("");
   }, [selectedScheduleId, fetchedDates]);
-
-  const handleSearch = () => {
-    if (selectedDate) {
-      const adjustedDate = new Date(selectedDate.getTime() - selectedDate.getTimezoneOffset() * 60000);
-      const formattedDate = adjustedDate.toISOString().split("T")[0];
-
-      const options = {
-        weekday: "short",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      };
-      const formattedDisplayDate = new Intl.DateTimeFormat(
-        "en-US",
-        options
-      ).format(selectedDate);
-
-      onSearch({
-        origin: selectedOrigin,
-        destination: selectedDestination,
-        time: time,
-        date: formattedDisplayDate,
-        dates: dates,
-        route_schedule: selectedScheduleId,
-        journey_date: formattedDate,
-      });
-    }
-  };
 
   const openModal = (type) => {
     setModalType(type);
@@ -149,11 +118,6 @@ const SearchForm = ({ onSearch }) => {
       setSelectedScheduleId(item.id);
     }
     setModalVisible(false);
-  };
-
-  const handleDateChange = (event, date) => {
-    setSelectedDate(date);
-    setOpenDatePicker(false);
   };
 
   const formatTime = (time) => {
@@ -214,28 +178,10 @@ const SearchForm = ({ onSearch }) => {
     </Modal>
   );
 
-  // Calculate minimum and maximum date
-  const journeyDates = dates.map((date) => new Date(date.journey_date));
-
-  // Calculate minimum and maximum date
-  const minDate = journeyDates.length
-    ? new Date(Math.min(...journeyDates))
-    : new Date();
-  const maxDate = journeyDates.length
-    ? new Date(Math.max(...journeyDates))
-    : new Date();
-
-  // Function to check if a date is enabled (selectable)
-  const isDateEnabled = (date) => {
-    return journeyDates.some(
-      (availableDate) => availableDate.getTime() === date.getTime()
-    );
-  };
-
   return (
     <View style={styles.container}>
       {loading && <ActivityIndicator size="large" color="#00103D" />}
-      <Text style={styles.topic}>Describe your one-way trip</Text>
+      <Text style={styles.topic}>Configure the validation</Text>
 
       <TouchableOpacity
         style={styles.inputs}
@@ -261,6 +207,21 @@ const SearchForm = ({ onSearch }) => {
       <View style={styles.period}>
         <TouchableOpacity
           style={[styles.inputs, styles.halfInput]}
+          onPress={() => openModal("vehicle")}
+          disabled={!selectedSchedule}
+        >
+          <Image source={VehicleIcon} style={styles.elementIcon} />
+          <Text style={styles.elementLabel}>
+            {selectedVehicle
+              ? selectedVehicle.length > 14
+                ? `${selectedVehicle.substring(0, 14)}...`
+                : selectedVehicle
+              : "Select Vehicle"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.inputs, styles.halfInput]}
           onPress={() => openModal("schedule")}
           disabled={!selectedDestination}
         >
@@ -273,34 +234,7 @@ const SearchForm = ({ onSearch }) => {
               : "Pick Schedule"}
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.inputs, styles.halfInput]}
-          onPress={() => setOpenDatePicker(true)}
-          disabled={!selectedSchedule}
-        >
-          <Image source={DateIcon} style={styles.elementIcon} />
-          <Text style={styles.elementLabel}>
-            {selectedDate ? selectedDate.toDateString() : "Choose Date"}
-          </Text>
-        </TouchableOpacity>
       </View>
-
-      {openDatePicker && (
-        <DateTimePicker
-          testID="datePicker"
-          value={selectedDate || new Date()}
-          mode="date"
-          onChange={handleDateChange}
-          minimumDate={minDate}
-          maximumDate={maxDate}
-          enabledDates={(date) => isDateEnabled(date)}
-        />
-      )}
-
-      <TouchableOpacity onPress={handleSearch} style={styles.button}>
-        <Text style={styles.buttonText}>Search</Text>
-      </TouchableOpacity>
 
       {renderModal()}
     </View>
@@ -314,11 +248,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 15,
     marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 7,
+    borderWidth: 1,
+    borderColor: 'black'
   },
   button: {
     backgroundColor: "#070C35",
@@ -332,14 +263,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputs: {
-    paddingVertical: 7,
+    paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#999999",
     alignItems: "left",
     flexDirection: "row",
-    marginVertical: 3,
+    marginVertical: '3%',
   },
   elementLabel: {
     marginLeft: 10,

@@ -9,16 +9,12 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import PaymentMethodCard from "../components/PaymentMethodCard";
-import BackArrow from "../assets/arrow-circle-left.png";
-import MtnLogo from "../assets/mtn_momo.png";
-import OrangeLogo from "../assets/orange_money.png";
-import VisaLogo from "../assets/visa.png";
+import SearchForm from "../components/SearchForm";
 
-const PaymentScreen = ({ route }) => {
+const PaymentScreen = () => {
   const navigation = useNavigation();
-  const { journey } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
 
   const [selectedCard, setSelectedCard] = useState(null);
@@ -42,48 +38,27 @@ const PaymentScreen = ({ route }) => {
       <View style={styles.backgroundDiv}>
         <View style={styles.another}>
           <View>
-            <TouchableOpacity
-              style={styles.backArrowContainer}
-              onPress={() => navigation.goBack()}
-              accessible={true}
-              accessibilityLabel="Back"
-              accessibilityHint="Navigates to the previous screen"
-            >
-              <Image source={BackArrow} style={styles.backArrow} />
-            </TouchableOpacity>
+            <Image
+              source={require("../assets/CamWiGo_logo.png")} // Replace with your logo
+              style={styles.logo}
+            />
           </View>
           <View style={styles.heading}>
-            <Text style={styles.header}>Make Payment</Text>
+            <Text style={styles.header}>CamWiGo - Scanner</Text>
           </View>
         </View>
       </View>
 
       <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>Choose payment method</Text>
-          <PaymentMethodCard
-            imageSource={MtnLogo}
-            paymentMethodName="MTN Mobile Money"
-            isSelected={selectedCard === "MTN Mobile Money"}
-            onCardSelect={() => handleCardSelect("MTN Mobile Money")}
-            data={journey}
-          />
-          <PaymentMethodCard
-            imageSource={OrangeLogo}
-            paymentMethodName="Orange Money"
-            isSelected={selectedCard === "Orange Money"}
-            onCardSelect={() => handleCardSelect("Orange Money")}
-            data={journey}
-          />
-
-          <PaymentMethodCard
-            imageSource={VisaLogo}
-            paymentMethodName="Visa Card Pay"
-            isSelected={selectedCard === "Visa Card Pay"}
-            onCardSelect={() => handleCardSelect("Visa Card Pay")}
-            data={journey}
-          />
-        </ScrollView>
+        <View>
+          <SearchForm />
+            <TouchableOpacity style={styles.scanButton}>
+              <Text style={styles.scanHeading}>SCAN QR CODE</Text>
+              <View style={styles.codeHouse}>
+                <Ionicons name="qr-code" size={180} color="#070c35" />
+              </View>
+            </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -92,17 +67,13 @@ const PaymentScreen = ({ route }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: "#f5f5f5",
     backgroundColor: "#070c35",
   },
   backgroundDiv: {
     height: "12%",
-    //height: "17%",
   },
   another: {
     height: "95%",
-    //backgroundColor: "#070C35",
-    //  backgroundColor: "red",
 
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -110,44 +81,48 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    //justifyContent:"center"
-  },
-  backArrowContainer: {
-    // position: "absolute",
-    left: 15,
-    //top: "29%",
-    // transform: [{ translateY: -12 }],
-    // zIndex: 1, // Ensure it's on top
-  },
-  backArrow: {
-    width: 30,
-    height: 30,
-    tintColor: "#CDD2F8",
   },
   header: {
-    color: "#CDD2F8",
+    color: "#fff",
     fontSize: 25,
     fontWeight: "900",
   },
   container: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 28,
     paddingVertical: 25,
     height: "90%",
     position: "relative",
-    // marginTop: -(0.77 * StatusBar.currentHeight),
     backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
-  title: {
+  belowDiv: {
+    padding: '10%',
+  },
+  scanButton: {
+    borderWidth: 3,
+    borderRadius: 20,
+    paddingVertical: 40,
+    // paddingHorizontal: 10,
+    marginTop: '20%',
+  },
+  scanHeading: {
     fontSize: 20,
     fontWeight: "bold",
     alignSelf: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     color: "#070C35",
+  },
+  codeHouse: {
+    alignSelf: 'center',
   },
   heading: {
     marginLeft: "20%",
+  },
+  logo: {
+    width: 35,
+    height: 35,
+    marginBottom: 10,
   },
 });
 
