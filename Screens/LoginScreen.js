@@ -48,7 +48,7 @@ const LoginScreen = () => {
           <Text style={styles.topic}>LOGIN</Text>
           <TextInput
             style={styles.input}
-            placeholder="Email / Phone number"
+            placeholder="Email"
             value={firstName}
             onChangeText={setFirstName}
           />

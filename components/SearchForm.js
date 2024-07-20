@@ -121,9 +121,9 @@ const SearchForm = ({ onSearch }) => {
   };
 
   const formatTime = (time) => {
-    const [hours, minutes] = time.split(':');
+    const [hours, minutes] = time.split(":");
     const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const ampm = hour >= 12 ? "PM" : "AM";
     const formattedHour = hour % 12 || 12;
     return `${formattedHour}:${minutes} ${ampm}`;
   };
@@ -207,21 +207,6 @@ const SearchForm = ({ onSearch }) => {
       <View style={styles.period}>
         <TouchableOpacity
           style={[styles.inputs, styles.halfInput]}
-          onPress={() => openModal("vehicle")}
-          disabled={!selectedSchedule}
-        >
-          <Image source={VehicleIcon} style={styles.elementIcon} />
-          <Text style={styles.elementLabel}>
-            {selectedVehicle
-              ? selectedVehicle.length > 14
-                ? `${selectedVehicle.substring(0, 14)}...`
-                : selectedVehicle
-              : "Select Vehicle"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.inputs, styles.halfInput]}
           onPress={() => openModal("schedule")}
           disabled={!selectedDestination}
         >
@@ -232,6 +217,21 @@ const SearchForm = ({ onSearch }) => {
                 ? `${selectedSchedule.substring(0, 14)}...`
                 : selectedSchedule
               : "Pick Schedule"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.inputs, styles.halfInput]}
+          onPress={() => openModal("vehicle")}
+          disabled={!selectedSchedule}
+        >
+          <Image source={VehicleIcon} style={styles.elementIcon} />
+          <Text style={styles.elementLabel}>
+            {selectedVehicle
+              ? selectedVehicle.length > 14
+                ? `${selectedVehicle.substring(0, 14)}...`
+                : selectedVehicle
+              : "Select Vehicle"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: 'black'
+    borderColor: "black",
   },
   button: {
     backgroundColor: "#070C35",
@@ -270,10 +270,10 @@ const styles = StyleSheet.create({
     borderColor: "#999999",
     alignItems: "left",
     flexDirection: "row",
-    marginVertical: '3%',
+    marginVertical: "3%",
   },
   elementLabel: {
-    marginLeft: 10,
+    marginLeft: 9,
     fontSize: 14,
     // fontWeight: 'bold',
   },
