@@ -8,12 +8,25 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import useValidateTicket from "../utils/useValidateTicket";
+import useUserStore from "../zustand/useUserStore";
 import BackArrow from "../assets/arrow-circle-left.png";
 import { useNavigation } from "@react-navigation/native";
 
 const ConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { qrData } = route.params;
+  const { routeScheduleId, vehicleId, qrData } = route.params;
+  const { accessToken } = useUserStore();
+  const appToken = "sekurity$227";
+  const { ticket, loading } = useValidateTicket(
+    accessToken,
+    {
+      route_schedule_id: routeScheduleId,
+      vehicle_id: vehicleId,
+      ticket_data: qrData
+    },
+    appToken
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -36,6 +49,10 @@ const ConfirmationScreen = ({ route }) => {
       </View>
 
       <View style={styles.container}>
+        <Text style={styles.title}>Route Schedule ID</Text>
+        <Text style={styles.data}>{routeScheduleId}</Text>
+        <Text style={styles.title}>Vehicle ID</Text>
+        <Text style={styles.data}>{vehicleId}</Text>
         <Text style={styles.title}>Scanned Data</Text>
         <Text style={styles.data}>{qrData}</Text>
       </View>

@@ -22,11 +22,11 @@ import DestinationIcon from "../assets/location.png";
 import VehicleIcon from "../assets/bus.png";
 import ScheduleIcon from "../assets/clock2.png";
 
-const SearchForm = ({ onSearch }) => {
+const SearchForm = ({ setTheSelectedScheduleId, setTheSelectedVehicleId }) => {
   const navigation = useNavigation();
   const appToken = "sekurity$227";
   const { accessToken } = useUserStore();
-  
+
   const { origins } = useGetOrigins(accessToken, appToken);
   const [destinations, setDestinations] = useState([]);
   const [schedules, setSchedules] = useState([]);
@@ -38,16 +38,16 @@ const SearchForm = ({ onSearch }) => {
   const [selectedDestination, setSelectedDestination] = useState("");
   const [selectedDestinationId, setSelectedDestinationId] = useState(0);
   const [selectedSchedule, setSelectedSchedule] = useState("");
-  const [selectedScheduleId, setSelectedScheduleId] = useState(0);
+  const [internalSelectedScheduleId, setInternalSelectedScheduleId] =
+    useState(0); // Renamed
   const [selectedVehicle, setSelectedVehicle] = useState("");
-  const [selectedVehicleId, setSelectedVehicleId] = useState(0);
+  const [internalSelectedVehicleId, setInternalSelectedVehicleId] = useState(0); // Renamed
 
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
-  // Fetch destinations whenever selectedOriginId changes
   const { destinations: fetchedDestinations } = useGetDestinations(
     accessToken,
     selectedOriginId,
@@ -60,7 +60,7 @@ const SearchForm = ({ onSearch }) => {
   );
   const { vehicles: fetchedVehicles } = useGetVehicles(
     accessToken,
-    selectedScheduleId,
+    internalSelectedScheduleId,
     appToken
   );
 
@@ -93,13 +93,13 @@ const SearchForm = ({ onSearch }) => {
   }, [selectedDestinationId, fetchedSchedules]);
 
   useEffect(() => {
-    if (selectedScheduleId) {
+    if (internalSelectedScheduleId) {
       setVehicles(fetchedVehicles);
     } else {
       setVehicles([]);
     }
     setSelectedVehicle("");
-  }, [selectedScheduleId, fetchedVehicles]);
+  }, [internalSelectedScheduleId, fetchedVehicles]);
 
   const openModal = (type) => {
     setModalType(type);
@@ -125,10 +125,12 @@ const SearchForm = ({ onSearch }) => {
     } else if (modalType === "schedule") {
       setSelectedSchedule(item.label.en + " - " + item.departure_time);
       setTime(item.departure_time);
-      setSelectedScheduleId(item.id);
+      setInternalSelectedScheduleId(item.id); // Updated
+      setTheSelectedScheduleId(item.id); // Update parent state
     } else if (modalType === "vehicle") {
       setSelectedVehicle(item.name);
-      setSelectedVehicleId(item.id);
+      setInternalSelectedVehicleId(item.id); // Updated
+      setTheSelectedVehicleId(item.id); // Update parent state
     }
     setModalVisible(false);
   };

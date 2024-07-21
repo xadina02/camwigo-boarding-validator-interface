@@ -15,10 +15,15 @@ import SearchForm from "../components/SearchForm";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  
+  const [selectedScheduleId, setTheSelectedScheduleId] = useState(0);
+  const [selectedVehicleId, setTheSelectedVehicleId] = useState(0);
+
   const handlePress = () => {
-    navigation.navigate('QRCodeScannerScreen');
-  }
+    navigation.navigate("QRCodeScannerScreen", {
+      scheduleId: selectedScheduleId,
+      vehicleId: selectedVehicleId,
+    });
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -39,13 +44,16 @@ const HomeScreen = () => {
 
       <View style={styles.container}>
         <View>
-          <SearchForm />
-            <TouchableOpacity style={styles.scanButton} onPress={handlePress}>
-              <Text style={styles.scanHeading}>SCAN QR CODE</Text>
-              <View style={styles.codeHouse}>
-                <Ionicons name="qr-code" size={180} color="#070c35" />
-              </View>
-            </TouchableOpacity>
+          <SearchForm
+            setTheSelectedScheduleId={setTheSelectedScheduleId}
+            setTheSelectedVehicleId={setTheSelectedVehicleId}
+          />
+          <TouchableOpacity style={styles.scanButton} onPress={handlePress}>
+            <Text style={styles.scanHeading}>SCAN QR CODE</Text>
+            <View style={styles.codeHouse}>
+              <Ionicons name="qr-code" size={180} color="#070c35" />
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -84,14 +92,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   belowDiv: {
-    padding: '10%',
+    padding: "10%",
   },
   scanButton: {
     borderWidth: 3,
     borderRadius: 20,
     paddingVertical: 40,
     // paddingHorizontal: 10,
-    marginTop: '20%',
+    marginTop: "20%",
   },
   scanHeading: {
     fontSize: 20,
@@ -101,7 +109,7 @@ const styles = StyleSheet.create({
     color: "#070C35",
   },
   codeHouse: {
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   heading: {
     marginLeft: "20%",

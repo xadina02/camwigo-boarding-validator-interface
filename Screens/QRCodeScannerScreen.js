@@ -13,11 +13,12 @@ import { CameraView, Camera } from "expo-camera";
 import BackArrow from "../assets/arrow-circle-left.png";
 import { useNavigation } from "@react-navigation/native";
 
-const QRCodeScannerScreen = () => {
+const QRCodeScannerScreen = ({ route }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [data, setData] = useState("");
   const navigation = useNavigation();
+  const { scheduleId, vehicleId } = route.params;
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -31,7 +32,11 @@ const QRCodeScannerScreen = () => {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     setData(data);
-    navigation.navigate("ConfirmationScreen", { qrData: data });
+    navigation.navigate("ConfirmationScreen", { 
+      routeScheduleId: scheduleId,
+      vehicleId: vehicleId,
+      qrData: data
+     });
   };
 
   if (hasPermission === null) {
