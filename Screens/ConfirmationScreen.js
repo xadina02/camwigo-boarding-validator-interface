@@ -14,6 +14,8 @@ import useUserStore from "../zustand/useUserStore";
 import BackArrow from "../assets/arrow-circle-left.png";
 import { useNavigation } from "@react-navigation/native";
 import ProfileIcon from "../assets/default_profile.png";
+import Delimiter from "../assets/delimiter.png";
+import SuccessTick from "../assets/success-tick1.png";
 import JourneyCard from "../components/JourneyCard";
 
 const ConfirmationScreen = ({ route }) => {
@@ -41,6 +43,10 @@ const ConfirmationScreen = ({ route }) => {
     },
     appToken
   );
+
+  const handleReserve = () => {
+    navigation.navigate("HomeScreen");
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -72,19 +78,34 @@ const ConfirmationScreen = ({ route }) => {
             />
           </View>
         ) : (
-          <View style={styles.ticketDetails}>
-            <View style={styles.profileContainer}>
-              <Image source={ProfileIcon} style={styles.profileImage} />
-              <View style={styles.userInfo}>
-                <Text
-                  style={styles.userName}
-                >{`${ticket.reservation.user.firstName} ${ticket.reservation.user.lastName}`}</Text>
-                <Text style={styles.userType}>Passenger</Text>
+          <View>
+            <View>
+              <Image source={SuccessTick} style={styles.modalIcon} />
+              <Text style={styles.validationStatusText} >Validated!</Text>
+            </View>
+            <Image source={Delimiter} style={styles.delimiter} />
+            <View style={styles.ticketDetails}>
+              <View style={styles.profileContainer}>
+                <Image source={ProfileIcon} style={styles.profileImage} />
+                <View style={styles.userInfo}>
+                  <Text
+                    style={styles.userName}
+                  >{`${ticket.reservation.user.firstName} ${ticket.reservation.user.lastName}`}</Text>
+                  <Text style={styles.userType}>Passenger</Text>
+                </View>
+              </View>
+              <View style={styles.separator} key={journey.id}>
+                <JourneyCard
+                  key={ticket.id}
+                  journey={ticket.reservation.vehicle_route_destination.id}
+                />
               </View>
             </View>
-            <View style={styles.separator} key={journey.id}>
-              <JourneyCard key={ticket.id} journey={ticket.reservation.vehicle_route_destination.id} />
-            </View>
+            <TouchableOpacity style={styles.button} onPress={handleReserve}>
+              <Text style={styles.buttonText}>
+                <Image source={ReserveIcon} /> CLOSE
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -100,8 +121,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 28,
-    paddingVertical: 25,
+    padding: 10,
     height: "94%",
     position: "relative",
     backgroundColor: "#fff",
@@ -142,8 +162,24 @@ const styles = StyleSheet.create({
   data: {
     fontSize: 16,
   },
+  modalIcon: {
+    width: 100,
+    height: 100,
+    marginBottom: 5,
+  },
+  delimiter: {
+    marginTop: 5,
+    marginBottom: 5,
+    width: "100%",
+  },
+  validationStatusText: {
+    textAlign: "center",
+    color: "#070C35",
+    fontSize: 20,
+    fontWeight: "900",
+  },
   ticketDetails: {
-    justifyContent: 'center',
+    justifyContent: "center",
     borderWidth: 1,
     borderRadius: 20,
     paddingVertical: 20,
@@ -174,6 +210,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#A1A3AE",
+  },
+  loader: {
+    height: 18.1,
   },
 });
 
