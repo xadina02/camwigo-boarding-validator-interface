@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { API } from "./fetcher";
 
-const useGetSchedules = (routeDestinationId, security) => {
+const useGetSchedules = (token, routeDestinationId, security) => {
   const [schedules, setSchedules] = useState([]);
 
   useEffect(() => {
     // console.log("useGetSchedules hook called");
     const fetchSchedules = async () => {
       try {
-        const response = await API.getSchedules(routeDestinationId, security);
+        const response = await API.getSchedules(token, routeDestinationId, security);
         const statusCode = response[0];
         const res = response[1];
         // console.log('API response: ', res);
@@ -29,7 +29,7 @@ const useGetSchedules = (routeDestinationId, security) => {
     };
 
     fetchSchedules();
-  }, [routeDestinationId, security]);
+  }, [token, routeDestinationId, security]);
 
   return { schedules };
 };

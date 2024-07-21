@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { API } from "./fetcher";
 
-const useGetOrigins = (security) => {
+const useGetOrigins = (token, security) => {
   const [origins, setOrigins] = useState([]);
 
   useEffect(() => {
     // console.log("useGetOrigins hook called");
     const fetchOrigins = async () => {
       try {
-        const response = await API.getAllOrigins(security);
+        const response = await API.getAllOrigins(token, security);
         const statusCode = response[0];
         const res = response[1];
         // console.log('API response: ', res);
@@ -28,7 +28,7 @@ const useGetOrigins = (security) => {
     };
 
     fetchOrigins();
-  }, [security]);
+  }, [token, security]);
 
   return { origins };
 };

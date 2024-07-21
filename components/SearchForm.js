@@ -14,7 +14,8 @@ import {
 import useGetOrigins from "../utils/useGetOrigin";
 import useGetDestinations from "../utils/useGetDestination";
 import useGetSchedules from "../utils/useGetSchedule";
-import useGetDates from "../utils/useGetDate";
+import useGetVehicles from "../utils/useGetVehicle";
+import useUserStore from "../zustand/useUserStore";
 import { useNavigation } from "@react-navigation/native";
 import OriginIcon from "../assets/direct-down.png";
 import DestinationIcon from "../assets/location.png";
@@ -24,8 +25,9 @@ import ScheduleIcon from "../assets/clock2.png";
 const SearchForm = ({ onSearch }) => {
   const navigation = useNavigation();
   const appToken = "sekurity$227";
-
-  const { origins } = useGetOrigins(appToken);
+  const { accessToken } = useUserStore();
+  
+  const { origins } = useGetOrigins(accessToken, appToken);
   const [destinations, setDestinations] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -47,14 +49,20 @@ const SearchForm = ({ onSearch }) => {
 
   // Fetch destinations whenever selectedOriginId changes
   const { destinations: fetchedDestinations } = useGetDestinations(
+    accessToken,
     selectedOriginId,
     appToken
   );
   const { schedules: fetchedSchedules } = useGetSchedules(
+    accessToken,
     selectedDestinationId,
     appToken
   );
-  const { dates: fetchedDates } = useGetDates(selectedScheduleId, appToken);
+  const { vehicles: fetchedVehicles } = useGetVehicles(
+    accessToken,
+    selectedScheduleId,
+    appToken
+  );
 
   useEffect(() => {
     setFilteredData(origins);
@@ -86,12 +94,12 @@ const SearchForm = ({ onSearch }) => {
 
   useEffect(() => {
     if (selectedScheduleId) {
-      setVehicles(fetchedDates);
+      setVehicles(fetchedVehicles);
     } else {
       setVehicles([]);
     }
     setSelectedVehicle("");
-  }, [selectedScheduleId, fetchedDates]);
+  }, [selectedScheduleId, fetchedVehicles]);
 
   const openModal = (type) => {
     setModalType(type);
@@ -101,6 +109,8 @@ const SearchForm = ({ onSearch }) => {
       setFilteredData(destinations);
     } else if (type === "schedule") {
       setFilteredData(schedules);
+    } else if (type === "vehicle") {
+      setFilteredData(vehicles);
     }
     setModalVisible(true);
   };
@@ -116,6 +126,9 @@ const SearchForm = ({ onSearch }) => {
       setSelectedSchedule(item.label.en + " - " + item.departure_time);
       setTime(item.departure_time);
       setSelectedScheduleId(item.id);
+    } else if (modalType === "vehicle") {
+      setSelectedVehicle(item.name);
+      setSelectedVehicleId(item.id);
     }
     setModalVisible(false);
   };
@@ -138,6 +151,7 @@ const SearchForm = ({ onSearch }) => {
         {modalType === "destination" && item.destination.en}
         {modalType === "schedule" &&
           `${formatTime(item.departure_time)} - ${item.label.en}`}
+        {modalType === "vehicle" && item.name}
       </Text>
     </TouchableOpacity>
   );
@@ -273,7 +287,7 @@ const styles = StyleSheet.create({
     marginVertical: "3%",
   },
   elementLabel: {
-    marginLeft: 9,
+    marginLeft: 7,
     fontSize: 14,
     // fontWeight: 'bold',
   },

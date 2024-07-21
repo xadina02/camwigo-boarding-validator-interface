@@ -10,20 +10,49 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import { toast } from "react-toastify";
 import { useNavigation } from "@react-navigation/native";
+import useGetUser from "../utils/useGetUser";
+import Toast from 'react-native-toast-message';
+import useUserStore from "../zustand/useUserStore";
 import BackArrow from "../assets/arrow-circle-left.png";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [nin, setNin] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleContinue = () => {
-    navigation.navigate("HomeScreen")
+  const appToken = "sekurity$227";
+
+  const { loading, fetchUser } = useGetUser();
+
+
+  const handleContinue = async () => {
+    const data = {
+      email: email.trim(),
+      password: password.trim(),
+    };
+
+    if (!data.email || !data.password) {
+      // toast.error("All required fields must be filled.");
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: "All required fields must be filled.",
+      });
+      return;
+    }
+
+    await fetchUser(data, appToken, (userData) => {
+      if (userData) { Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: "Login Successful",
+      });
+        navigation.navigate("HomeScreen");
+      }
+    });
   };
 
   return (
@@ -49,14 +78,14 @@ const LoginScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Email"
-            value={firstName}
-            onChangeText={setFirstName}
+            value={email}
+            onChangeText={setEmail}
           />
           <TextInput
             style={styles.input}
             placeholder="Password"
-            value={lastName}
-            onChangeText={setLastName}
+            value={password}
+            onChangeText={setPassword}
           />
           <TouchableOpacity style={styles.button} onPress={handleContinue}>
             <Text style={styles.buttonText}>Continue ➔</Text>

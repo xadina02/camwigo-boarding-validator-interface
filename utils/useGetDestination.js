@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { API } from "./fetcher";
 
-const useGetDestinations = (routeId, security) => {
+const useGetDestinations = (token, routeId, security) => {
   const [destinations, setDestinations] = useState([]);
 
   useEffect(() => {
     // console.log("useGetDestinations hook called");
     const fetchDestinations = async () => {
       try {
-        const response = await API.getDestinations(routeId, security);
+        const response = await API.getDestinations(token, routeId, security);
         const statusCode = response[0];
         const res = response[1];
         // console.log('API response: ', res);
@@ -29,7 +29,7 @@ const useGetDestinations = (routeId, security) => {
     };
 
     fetchDestinations();
-  }, [routeId, security]);
+  }, [token, routeId, security]);
 
   return { destinations };
 };

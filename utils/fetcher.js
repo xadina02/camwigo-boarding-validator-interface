@@ -18,7 +18,7 @@ export const API = {
 
     try {
       const response = await fetch(
-        `http://192.168.107.124:8000/api/v1/en/validator/${url}`,
+        `http://192.168.103.124:8000/api/v1/en/validator/${url}`,
         {
           method: method,
           headers,
@@ -52,15 +52,16 @@ export const API = {
 
   /**
    * API request to register user
+   * @param token
    * @param data
    * @param security
    * @returns
    */
-  registerUser: async (data, security) => {
+  logUserIn: async (data, security) => {
     const res = await API.execute(
-      "/auth/register/",
+      "auth/login",
       "POST",
-      JSON.stringify({ personalDetails: data }),
+      JSON.stringify(data),
       null,
       security
     );
@@ -69,127 +70,27 @@ export const API = {
 
   /**
    * API request to get all origins
+   * @param token
    * @param security
    * @returns
    */
-  getAllOrigins: async (security) => {
-    const res = await API.execute("routes/all", "GET", null, null, security);
+  getAllOrigins: async (token, security) => {
+    const res = await API.execute("routes/all", "GET", null, token, security);
     return res;
   },
 
   /**
    * API request to get all origin-destinations
+   * @param token
    * @param routeId
    * @param security
    * @returns
    */
-  getDestinations: async (routeId, security) => {
+  getDestinations: async (token, routeId, security) => {
     const res = await API.execute(
       `route-destinations/${routeId}/all`,
       "GET",
       null,
-      null,
-      security
-    );
-    return res;
-  },
-
-  /**
-   * API request to get all destination-schedules
-   * @param routeDestinationId
-   * @param security
-   * @returns
-   */
-  getSchedules: async (routeDestinationId, security) => {
-    const res = await API.execute(
-      `route-schedules/${routeDestinationId}`,
-      "GET",
-      null,
-      null,
-      security
-    );
-    return res;
-  },
-
-  /**
-   * API request to get all unique schedule-dates
-   * @param routeScheduleId
-   * @param security
-   * @returns
-   */
-  getDates: async (routeScheduleId, security) => {
-    const res = await API.execute(
-      `journey-dates/${routeScheduleId}`,
-      "GET",
-      null,
-      null,
-      security
-    );
-    return res;
-  },
-
-  /**
-   * API request to get travel journeys from search
-   * @param security
-   * @returns
-   */
-  getSearchedJourneys: async (routeScheduleId, journeyDate, security) => {
-    const res = await API.execute(
-      `vehicle-journey/${routeScheduleId}/${journeyDate}`,
-      "GET",
-      null,
-      null,
-      security
-    );
-    return res;
-  },
-
-  /**
-   * API request to get top travel journeys for today
-   * @param security
-   * @returns
-   */
-  getTopTravelJourneys: async (security) => {
-    const res = await API.execute(
-      "top-travels",
-      "GET",
-      null,
-      null,
-      security
-    );
-    return res;
-  },
-
-  /**
-   * API request to get travel journey details
-   * @param vehicleRouteDestinationId
-   * @param security
-   * @returns
-   */
-  getTravelJourneyDetails: async (vehicleRouteDestinationId, security) => {
-    const res = await API.execute(
-      `vehicle-journey/${vehicleRouteDestinationId}`,
-      "GET",
-      null,
-      null,
-      security
-    );
-    return res;
-  },
-
-  /**
-   * API request to make reservation
-   * @param token
-   * @param vehicleRouteDestinationId
-   * @param data
-   * @param security
-   * @returns
-   */
-  makeReservation: async (token, vehicleRouteDestinationId, data, security) => {
-    const res = await API.execute(
-      `reservation/${vehicleRouteDestinationId}`,
-      "POST",
-      JSON.stringify({ reservation: data }),
       token,
       security
     );
@@ -197,41 +98,57 @@ export const API = {
   },
 
   /**
-   * API request to make payment
-   * @param reservationId
-   * @param data
+   * API request to get all destination-schedules
+   * @param token
+   * @param routeDestinationId
    * @param security
    * @returns
    */
-  makePayment: async (reservationId, data, security) => {
+  getSchedules: async (token, routeDestinationId, security) => {
     const res = await API.execute(
-      `make-payment/${reservationId}`,
-      "POST",
-      JSON.stringify({ paymentDetails: data }),
+      `route-schedules/${routeDestinationId}`,
+      "GET",
       null,
+      token,
       security
     );
     return res;
   },
 
   /**
-   * API request to get all tickets
+   * API request to get all unique schedule-vehicles
+   * @param token
+   * @param routeScheduleId
    * @param security
    * @returns
    */
-  getAllTickets: async (security) => {
-    const res = await API.execute("tickets/all", "GET", null, null, security);
+  getVehicles: async (token, routeScheduleId, security) => {
+    const res = await API.execute(
+      `schedule-vehicles/${routeScheduleId}`,
+      "GET",
+      null,
+      token,
+      security
+    );
     return res;
   },
 
   /**
-   * API request to get all tickets
-   * @param reservationId
+   * API request to validate the ticket
+   * @param token
+   * @param vehicleRouteDestinationId
+   * @param data
    * @param security
    * @returns
    */
-  getTicket: async (reservationId, security) => {
-    const res = await API.execute(`tickets/${reservationId}`, "GET", null, null, security);
+  validateTicket: async (token, data, security) => {
+    const res = await API.execute(
+      "validate",
+      "POST",
+      JSON.stringify(data),
+      token,
+      security
+    );
     return res;
   },
 };
