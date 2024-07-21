@@ -9,25 +9,6 @@ const JourneyCard = ({ journey }) => {
   const baseUrl = "http://192.168.103.124:8000";
   const imageBaseUrl = `${baseUrl}/storage`;
   const imageIconLink = `${imageBaseUrl}${journey.vehicle.vehicle_category.icon_link}`;
-  const [journeyDetails, setJourneyDetails] = useState(null);
-
-  const appToken = "sekurity$227";
-
-  const { travelJourneyDetails, loading, fetchTravelJourneyDetails } =
-    useGetTravelJourneyDetails();
-
-  const handleNext = async () => {
-    await fetchTravelJourneyDetails(journey.id, appToken, (fetchedDetails) => {
-      setJourneyDetails(fetchedDetails);
-      navigation.navigate("ReservationScreen", {
-        journey: fetchedDetails,
-      });
-    });
-  };
-
-  useEffect(() => {
-    setJourneyDetails(travelJourneyDetails);
-  }, [travelJourneyDetails]);
 
   return (
     <View style={styles.card}>
@@ -47,18 +28,6 @@ const JourneyCard = ({ journey }) => {
         status={false}
         none={false}
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color="#f5f5f5"
-            style={styles.loader}
-          />
-        ) : (
-          <Text style={styles.buttonText}>View details ➔</Text>
-        )}
-      </TouchableOpacity>
     </View>
   );
 };
@@ -70,14 +39,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 10,
     marginBottom: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    borderColor: "#41D635",
-    borderWidth: 2,
-    borderRadius: 20,
     overflow: "hidden",
   },
   headerRow: {
@@ -109,19 +70,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 5,
-  },
-  button: {
-    backgroundColor: "#00103D",
-    padding: 12,
-    borderRadius: 20,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-  loader: {
-    height: 18.1
   },
 });
 

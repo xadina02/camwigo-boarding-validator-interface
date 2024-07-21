@@ -6,24 +6,38 @@ import {
   StatusBar,
   SafeAreaView,
   TouchableOpacity,
+  ActivityIndicator,
   Image,
 } from "react-native";
 import useValidateTicket from "../utils/useValidateTicket";
 import useUserStore from "../zustand/useUserStore";
 import BackArrow from "../assets/arrow-circle-left.png";
 import { useNavigation } from "@react-navigation/native";
+import ProfileIcon from "../assets/default_profile.png";
+import JourneyCard from "../components/JourneyCard";
 
 const ConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
   const { routeScheduleId, vehicleId, qrData } = route.params;
   const { accessToken } = useUserStore();
   const appToken = "sekurity$227";
+
+  const getCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(now.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   const { ticket, loading } = useValidateTicket(
     accessToken,
     {
       route_schedule_id: routeScheduleId,
       vehicle_id: vehicleId,
-      ticket_data: qrData
+      ticket_data: qrData,
+      date: getCurrentDate(),
     },
     appToken
   );
@@ -49,12 +63,30 @@ const ConfirmationScreen = ({ route }) => {
       </View>
 
       <View style={styles.container}>
-        <Text style={styles.title}>Route Schedule ID</Text>
-        <Text style={styles.data}>{routeScheduleId}</Text>
-        <Text style={styles.title}>Vehicle ID</Text>
-        <Text style={styles.data}>{vehicleId}</Text>
-        <Text style={styles.title}>Scanned Data</Text>
-        <Text style={styles.data}>{qrData}</Text>
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator
+              size="large"
+              color="#070C35"
+              style={styles.loader}
+            />
+          </View>
+        ) : (
+          <View style={styles.ticketDetails}>
+            <View style={styles.profileContainer}>
+              <Image source={ProfileIcon} style={styles.profileImage} />
+              <View style={styles.userInfo}>
+                <Text
+                  style={styles.userName}
+                >{`${ticket.reservation.user.firstName} ${ticket.reservation.user.lastName}`}</Text>
+                <Text style={styles.userType}>Passenger</Text>
+              </View>
+            </View>
+            <View style={styles.separator} key={journey.id}>
+              <JourneyCard key={ticket.id} journey={ticket.reservation.vehicle_route_destination.id} />
+            </View>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -109,6 +141,39 @@ const styles = StyleSheet.create({
   },
   data: {
     fontSize: 16,
+  },
+  ticketDetails: {
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+  },
+  profileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: "15%",
+    justifyContent: "left",
+    padding: 25,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  userInfo: {
+    flexDirection: "column",
+    marginLeft: 10,
+  },
+  userName: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  userType: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#A1A3AE",
   },
 });
 
