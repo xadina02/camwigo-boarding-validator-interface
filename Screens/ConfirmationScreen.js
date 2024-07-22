@@ -44,7 +44,7 @@ const ConfirmationScreen = ({ route }) => {
     appToken
   );
 
-  const handleReserve = () => {
+  const handleClose = () => {
     navigation.navigate("HomeScreen");
   };
 
@@ -101,7 +101,7 @@ const ConfirmationScreen = ({ route }) => {
                 />
               </View>
             </View>
-            <TouchableOpacity style={styles.button} onPress={handleReserve}>
+            <TouchableOpacity style={styles.button} onPress={handleClose}>
               <Text style={styles.buttonText}>
                 <Image source={ReserveIcon} /> CLOSE
               </Text>
