@@ -1,3 +1,5 @@
+import { BASE_URL, IMAGE_BASE_URL } from "../config";
+
 export const API = {
   /**
    * Execute a query
@@ -18,7 +20,7 @@ export const API = {
 
     try {
       const response = await fetch(
-        `http://192.168.204.124:8000/api/v1/en/validator/${url}`,
+        `${BASE_URL}/api/v1/en/validator/${url}`,
         {
           method: method,
           headers,
