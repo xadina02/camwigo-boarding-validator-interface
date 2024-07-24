@@ -9,40 +9,17 @@ import {
   ActivityIndicator,
   Image,
 } from "react-native";
-import useValidateTicket from "../utils/useValidateTicket";
-import useUserStore from "../zustand/useUserStore";
 import BackArrow from "../assets/arrow-circle-left.png";
 import { useNavigation } from "@react-navigation/native";
 import ProfileIcon from "../assets/default_profile.png";
 import Delimiter from "../assets/delimiter.png";
 import SuccessTick from "../assets/success-tick1.png";
+import FailureIcon from "../assets/failure_icon.png";
 import JourneyCard from "../components/JourneyCard";
 
 const ConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { routeScheduleId, vehicleId, qrData } = route.params;
-  const { accessToken } = useUserStore();
-  const appToken = "sekurity$227";
-
-  const getCurrentDate = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(now.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  };
-
-  const { ticket, loading } = useValidateTicket(
-    accessToken,
-    {
-      route_schedule_id: routeScheduleId,
-      vehicle_id: vehicleId,
-      ticket_data: qrData,
-      date: getCurrentDate(),
-    },
-    appToken
-  );
+  const { ticket } = route.params;
 
   const handleClose = () => {
     navigation.navigate("HomeScreen");
@@ -69,19 +46,11 @@ const ConfirmationScreen = ({ route }) => {
       </View>
 
       <View style={styles.container}>
-        {loading ? (
-          <View style={styles.loaderContainer}>
-            <ActivityIndicator
-              size="large"
-              color="#070C35"
-              style={styles.loader}
-            />
-          </View>
-        ) : (
-          <View>
-            <View>
+        {ticket ? (
+          <>
+            <View style={styles.topContainer}>
               <Image source={SuccessTick} style={styles.modalIcon} />
-              <Text style={styles.validationStatusText} >Validated!</Text>
+              <Text style={styles.validationStatusText}>Validated!</Text>
             </View>
             <Image source={Delimiter} style={styles.delimiter} />
             <View style={styles.ticketDetails}>
@@ -90,23 +59,25 @@ const ConfirmationScreen = ({ route }) => {
                 <View style={styles.userInfo}>
                   <Text
                     style={styles.userName}
-                  >{`${ticket.reservation.user.firstName} ${ticket.reservation.user.lastName}`}</Text>
+                  >{`${ticket.reservation.user.first_name} ${ticket.reservation.user.last_name}`}</Text>
                   <Text style={styles.userType}>Passenger</Text>
                 </View>
               </View>
-              <View style={styles.separator} key={journey.id}>
-                <JourneyCard
-                  key={ticket.id}
-                  journey={ticket.reservation.vehicle_route_destination.id}
-                />
+              <View style={styles.separator} key={ticket.id}>
+                <JourneyCard key={ticket.id} journey={ticket.reservation} />
               </View>
             </View>
             <TouchableOpacity style={styles.button} onPress={handleClose}>
-              <Text style={styles.buttonText}>
-                <Image source={ReserveIcon} /> CLOSE
-              </Text>
+              <Text style={styles.buttonText}>CLOSE</Text>
             </TouchableOpacity>
-          </View>
+          </>
+        ) : (
+          <>
+            {/* <View style={styles.topContainer}> */}
+              <Image source={FailureIcon} style={styles.failureIcon} />
+              <Text style={styles.validationStatusTextFailed}>Failed!</Text>
+            {/* </View> */}
+          </>
         )}
       </View>
     </SafeAreaView>
@@ -120,8 +91,8 @@ const styles = StyleSheet.create({
   },
   container: {
     justifyContent: "center",
-    alignItems: "center",
-    padding: 10,
+    // alignItems: "center",
+    padding: 20,
     height: "94%",
     position: "relative",
     backgroundColor: "#fff",
@@ -162,10 +133,22 @@ const styles = StyleSheet.create({
   data: {
     fontSize: 16,
   },
+  topContainer: {
+    marginTop: "-14%",
+    marginBottom: 30,
+    // backgroundColor: 'bisque'
+  },
   modalIcon: {
-    width: 100,
-    height: 100,
+    width: 157,
+    height: 150,
     marginBottom: 5,
+    alignSelf: "center",
+  },
+  failureIcon: {
+    width: 263,
+    height: 250,
+    marginBottom: 5,
+    alignSelf: "center",
   },
   delimiter: {
     marginTop: 5,
@@ -175,8 +158,15 @@ const styles = StyleSheet.create({
   validationStatusText: {
     textAlign: "center",
     color: "#070C35",
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "900",
+  },
+  validationStatusTextFailed: {
+    textAlign: "center",
+    color: "red",
+    fontSize: 25,
+    fontWeight: "900",
+    marginVertical: 20,
   },
   ticketDetails: {
     justifyContent: "center",
@@ -184,11 +174,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 20,
     paddingHorizontal: 10,
+    marginVertical: 30,
   },
   profileContainer: {
     flexDirection: "row",
     alignItems: "center",
-    height: "15%",
+    alignSelf: "center",
     justifyContent: "left",
     padding: 25,
   },
@@ -213,6 +204,16 @@ const styles = StyleSheet.create({
   },
   loader: {
     height: 18.1,
+  },
+  button: {
+    backgroundColor: "#00103D",
+    padding: 12,
+    borderRadius: 15,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 

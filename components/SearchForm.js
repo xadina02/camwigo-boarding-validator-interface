@@ -75,8 +75,11 @@ const SearchForm = ({ setTheSelectedScheduleId, setTheSelectedVehicleId }) => {
       setDestinations([]);
     }
     setSelectedDestination("");
+    setSelectedDestinationId(0)
     setSelectedSchedule("");
+    setInternalSelectedScheduleId(0)
     setSelectedVehicle("");
+    setInternalSelectedVehicleId(0)
     setSchedules([]);
     setVehicles([]);
   }, [selectedOriginId, fetchedDestinations]);
@@ -88,7 +91,9 @@ const SearchForm = ({ setTheSelectedScheduleId, setTheSelectedVehicleId }) => {
       setSchedules([]);
     }
     setSelectedSchedule("");
+    setInternalSelectedScheduleId(0)
     setSelectedVehicle("");
+    setInternalSelectedVehicleId(0)
     setVehicles([]);
   }, [selectedDestinationId, fetchedSchedules]);
 
@@ -99,6 +104,7 @@ const SearchForm = ({ setTheSelectedScheduleId, setTheSelectedVehicleId }) => {
       setVehicles([]);
     }
     setSelectedVehicle("");
+    setInternalSelectedVehicleId(0)
   }, [internalSelectedScheduleId, fetchedVehicles]);
 
   const openModal = (type) => {

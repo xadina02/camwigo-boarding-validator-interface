@@ -18,7 +18,7 @@ export const API = {
 
     try {
       const response = await fetch(
-        `http://192.168.103.124:8000/api/v1/en/validator/${url}`,
+        `http://192.168.204.124:8000/api/v1/en/validator/${url}`,
         {
           method: method,
           headers,

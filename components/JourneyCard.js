@@ -6,19 +6,19 @@ import { useNavigation } from "@react-navigation/native";
 
 const JourneyCard = ({ journey }) => {
   const navigation = useNavigation();
-  const baseUrl = "http://192.168.103.124:8000";
+  const baseUrl = "http://192.168.204.124:8000";
   const imageBaseUrl = `${baseUrl}/storage`;
-  const imageIconLink = `${imageBaseUrl}${journey.vehicle.vehicle_category.icon_link}`;
+  const imageIconLink = `${imageBaseUrl}${journey.vehicle_route_destination.vehicle.vehicle_category.icon_link}`;
 
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <View style={styles.vehicleInfo}>
           <Image source={{ uri: imageIconLink }} style={styles.vehicleIcon} />
-          <Text style={styles.vehicleName}>{journey.vehicle.name}</Text>
+          <Text style={styles.vehicleName}>{journey.vehicle_route_destination.vehicle.name}</Text>
         </View>
         <Text style={styles.type}>
-          {journey.vehicle.vehicle_category.name.en.toUpperCase()}
+          {journey.vehicle_route_destination.vehicle.vehicle_category.name.en.toUpperCase()}
         </Text>
       </View>
 
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 30,
   },
   vehicleInfo: {
     flexDirection: "row",

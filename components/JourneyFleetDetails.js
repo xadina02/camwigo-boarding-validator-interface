@@ -7,30 +7,43 @@ import ClockIcon from "../assets/clock.png";
 
 // const BusIcon = require('../assets/bus.svg');
 
-const JourneyFleetDetails = ({ journey, statusValue, seating, status, none }) => {
-  const dateObj = new Date(journey.journey_date);
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric'
+const JourneyFleetDetails = ({
+  journey,
+  statusValue,
+  seating,
+  status,
+  none,
+}) => {
+  const dateObj = new Date(journey.vehicle_route_destination.journey_date);
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
   }).format(dateObj);
 
   const formatTime = (time) => {
-    const [hours, minutes] = time.split(':');
+    const [hours, minutes] = time.split(":");
     const hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const ampm = hour >= 12 ? "PM" : "AM";
     const formattedHour = hour % 12 || 12;
     return `${formattedHour}:${minutes} ${ampm}`;
   };
 
-  const formattedTime = formatTime(journey.route_schedule.departure_time);
+  const formattedTime = formatTime(
+    journey.vehicle_route_destination.route_schedule.departure_time
+  );
 
   return (
     <>
       <View style={status ? styles.infoRowTicket : styles.infoRow}>
         <View style={styles.locationBox1}>
           <Text style={styles.locationLabel}>Origin</Text>
-          <Text style={styles.location}>{journey.route_schedule.route_destination.route.origin.en}</Text>
+          <Text style={styles.location}>
+            {
+              journey.vehicle_route_destination.route_schedule.route_destination
+                .route.origin.en
+            }
+          </Text>
         </View>
         <View style={styles.indicatorBox}>
           <Image source={Line} style={styles.line} />
@@ -40,7 +53,12 @@ const JourneyFleetDetails = ({ journey, statusValue, seating, status, none }) =>
         </View>
         <View style={styles.locationBox2}>
           <Text style={styles.locationLabel}>Destination</Text>
-          <Text style={styles.location}>{journey.route_schedule.route_destination.destination.en}</Text>
+          <Text style={styles.location}>
+            {
+              journey.vehicle_route_destination.route_schedule.route_destination
+                .destination.en
+            }
+          </Text>
         </View>
       </View>
       <View style={status ? styles.detailsRowTicket : styles.detailsRow}>
@@ -53,39 +71,17 @@ const JourneyFleetDetails = ({ journey, statusValue, seating, status, none }) =>
             </View>
           </View>
         </View>
-        {seating && (
-          <>
-            <View style={styles.detailBox}>
-              <View style={styles.detailWrapper2}>
-                <View style={styles.seating}>
-                  <Text style={styles.detailLabel1}>Available Seats</Text>
-                  <Text style={styles.seats}>
-                    <Text style={styles.availableSeats}>
-                      {journey.available_seats} /
-                    </Text>{" "}
-                    {journey.vehicle.vehicle_category.size}
-                  </Text>
-                </View>
-              </View>
+        <View style={styles.detailBox}>
+          <View style={styles.detailWrapper1}>
+            <View>
+            <Text style={styles.positionLabel}>Position</Text>
+            <Text style={styles.position}>{`${journey.reservation_positions
+              .map((position) => position.seat_number)
+              .join(", ")}`}</Text>
             </View>
-          </>
-        )}
-        {status && (
-          <>
-            <View style={styles.detailBox}>
-              <Text
-                style={statusValue === "used" ? styles.status : styles.type}
-              >
-                {statusValue.toUpperCase()}
-              </Text>
-            </View>
-          </>
-        )}
-        {none && (
-          <>
-            <View style={styles.detailBox}></View>
-          </>
-        )}
+          </View>
+        </View>
+
         <View style={styles.detailBox}>
           <View style={styles.detailWrapper3}>
             <View style={styles.pricing}>
@@ -93,7 +89,12 @@ const JourneyFleetDetails = ({ journey, statusValue, seating, status, none }) =>
                 <Image source={CoinIcon} style={styles.fareIcon}></Image>
                 <Text style={styles.detailLabel2}>Fleet Fare</Text>
               </View>
-              <Text style={styles.fare}>{journey.route_schedule.route_destination.price}</Text>
+              <Text style={styles.fare}>
+                {
+                  journey.vehicle_route_destination.route_schedule
+                    .route_destination.price
+                }
+              </Text>
             </View>
           </View>
         </View>
@@ -110,9 +111,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   infoRowTicket: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
   },
   locationBox1: {
@@ -283,6 +284,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 5,
+  },
+  positionBox: {
+    // flex: 1,
+    alignItems: "center",
+    marginLeft: 5,
+  },
+  positionLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 5,
+    alignSelf: 'center',
+  },
+  positionValue: {
+    fontSize: 16,
+    color: "blue",
+    fontWeight: "bold",
+  },
+  position: {
+    fontSize: 15,
+    fontWeight: "bold",
+    alignSelf: 'center',
+    // color: "#070C35",
+    paddingHorizontal: 10,
+    // paddingVertical: 2,
+    // borderRadius: 5,
   },
 });
 

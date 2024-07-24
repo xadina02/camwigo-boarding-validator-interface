@@ -5,11 +5,14 @@ import {
   View,
   Button,
   SafeAreaView,
+  ActivityIndicator,
   StatusBar,
   TouchableOpacity,
   Image,
 } from "react-native";
 import { CameraView, Camera } from "expo-camera";
+import useValidateTicket from "../utils/useValidateTicket";
+import useUserStore from "../zustand/useUserStore";
 import BackArrow from "../assets/arrow-circle-left.png";
 import { useNavigation } from "@react-navigation/native";
 
@@ -18,7 +21,10 @@ const QRCodeScannerScreen = ({ route }) => {
   const [scanned, setScanned] = useState(false);
   const [data, setData] = useState("");
   const navigation = useNavigation();
+  const [loading1, setLoading] = useState(false);
   const { scheduleId, vehicleId } = route.params;
+  const { accessToken } = useUserStore();
+  const appToken = "sekurity$227";
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -29,14 +35,37 @@ const QRCodeScannerScreen = ({ route }) => {
     getCameraPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const getCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(now.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const { ticket, loading, validateTicket } = useValidateTicket();
+
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
     setData(data);
-    navigation.navigate("ConfirmationScreen", { 
-      routeScheduleId: scheduleId,
-      vehicleId: vehicleId,
-      qrData: data
-     });
+    setLoading(true);
+    await validateTicket(
+      accessToken,
+      {
+        route_schedule_id: scheduleId,
+        vehicle_id: vehicleId,
+        ticket_data: data,
+        date: getCurrentDate(),
+      },
+      appToken,
+      (validatedTicket) => {
+        setLoading(false);
+        navigation.navigate("ConfirmationScreen", {
+          ticket: validatedTicket,
+        });
+      }
+    );
   };
 
   if (hasPermission === null) {
@@ -67,19 +96,34 @@ const QRCodeScannerScreen = ({ route }) => {
       </View>
 
       <View style={styles.container}>
-        <CameraView
+        {/* <CameraView
           onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
           barcodeScannerSettings={{
             barcodeTypes: ["qr", "pdf417"],
           }}
           style={StyleSheet.absoluteFillObject}
-        />
+        /> */}
+        <CameraView
+          // style={styles.camera}
+          style={StyleSheet.absoluteFillObject}
+          onBarcodeScanned={handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ["qr"],
+          }}
+        ></CameraView>
+        <View style={styles.focusPoint}>
+          <View style={[styles.corner, styles.topLeft]} />
+          <View style={[styles.corner, styles.topRight]} />
+          <View style={[styles.corner, styles.bottomLeft]} />
+          <View style={[styles.corner, styles.bottomRight]} />
+        </View>
         {scanned && (
           <Button
             title={"Tap to Scan Again"}
             onPress={() => setScanned(false)}
           />
         )}
+        {loading1 && <ActivityIndicator size="large" color="#f5f5f5" />}
       </View>
     </>
   );
@@ -90,6 +134,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
+    paddingHorizontal: 30,
+  },
+  camera: {
+    flex: 1,
   },
   backgroundDiv: {
     height: "6%",
@@ -116,9 +164,50 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 25,
     fontWeight: "900",
-    marginTop: (0.2 * StatusBar.currentHeight),
+    marginTop: 0.2 * StatusBar.currentHeight,
     // backgroundColor: 'bisque'
   },
+  focusPoint: {
+    height: "40%",
+    marginTop: "-45%",
+    borderRadius: 20,
+    position: "relative",
+  },
+  corner: {
+    position: "absolute",
+    width: 30,
+    height: 30,
+    borderColor: "#CDD2F8",
+  },
+  topLeft: {
+    top: 0,
+    left: 0,
+    borderTopWidth: 6,
+    borderLeftWidth: 6,
+  },
+  topRight: {
+    top: 0,
+    right: 0,
+    borderTopWidth: 6,
+    borderRightWidth: 6,
+  },
+  bottomLeft: {
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: 6,
+    borderLeftWidth: 6,
+  },
+  bottomRight: {
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: 6,
+    borderRightWidth: 6,
+  },
+  // unFocusPoint: {
+  //   flex: 1,
+  //   marginTop: (3 * StatusBar.currentHeight),
+  //   backgroundColor: 'rgba(0, 0, 0, 0.6)'
+  // }
 });
 
 export default QRCodeScannerScreen;

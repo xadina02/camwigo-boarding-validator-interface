@@ -19,10 +19,12 @@ const HomeScreen = () => {
   const [selectedVehicleId, setTheSelectedVehicleId] = useState(0);
 
   const handlePress = () => {
-    navigation.navigate("QRCodeScannerScreen", {
-      scheduleId: selectedScheduleId,
-      vehicleId: selectedVehicleId,
-    });
+    if (selectedVehicleId != 0) {
+      navigation.navigate("QRCodeScannerScreen", {
+        scheduleId: selectedScheduleId,
+        vehicleId: selectedVehicleId,
+      });
+    }
   };
 
   return (

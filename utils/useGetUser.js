@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
 import Toast from 'react-native-toast-message';
 import { API } from "./fetcher";
 import useUserStore from '../zustand/useUserStore';
