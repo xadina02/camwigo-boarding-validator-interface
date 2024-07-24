@@ -25,6 +25,11 @@ const useValidateTicket = () => {
           }
         } else if (statusCode === 404) {
           // toast.error(res.message);
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: res.message,
+          });
           if (callback) {
             callback(ticket);
           }
