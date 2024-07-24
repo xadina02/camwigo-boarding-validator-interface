@@ -1,10 +1,27 @@
 import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
+import { Audio } from "expo-av";
 import { API } from "./fetcher";
+
+// Initialize sound objects
+const successSound = new Audio.Sound();
+const failureSound = new Audio.Sound();
 
 const useValidateTicket = () => {
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      await successSound.loadAsync(require('../assets/sounds/success.wav'));
+      await failureSound.loadAsync(require('../assets/sounds/failure.mp3'));
+    })();
+
+    return () => {
+      successSound.unloadAsync();
+      failureSound.unloadAsync();
+    };
+  }, []);
 
   // useEffect(() => {
   const validateTicket = async (token, data, security, callback) => {
@@ -23,6 +40,7 @@ const useValidateTicket = () => {
         if (callback) {
           callback(res.data);
         }
+        await successSound.playAsync();
       } else if (statusCode === 404) {
         // console.log(res.message);
         if (callback) {
@@ -33,6 +51,7 @@ const useValidateTicket = () => {
           });
           callback(ticket);
         }
+        await failureSound.playAsync();
       } else if (statusCode === 429) {
         // toast.error("Too Many Attempts. Please try again later.");
         Toast.show({
@@ -40,6 +59,7 @@ const useValidateTicket = () => {
           text1: "Error",
           text2: "Too Many Attempts. Please try again later.",
         });
+        await failureSound.playAsync();
       }
     } catch (error) {
       // toast.error(error.message);
@@ -48,6 +68,7 @@ const useValidateTicket = () => {
         text1: "Error",
         text2: error.message,
       });
+      await failureSound.playAsync();
     } finally {
       setLoading(false);
     }
