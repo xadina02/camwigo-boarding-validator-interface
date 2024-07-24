@@ -74,8 +74,11 @@ const ConfirmationScreen = ({ route }) => {
         ) : (
           <>
             {/* <View style={styles.topContainer}> */}
-              <Image source={FailureIcon} style={styles.failureIcon} />
-              <Text style={styles.validationStatusTextFailed}>Failed!</Text>
+            <Image source={FailureIcon} style={styles.failureIcon} />
+            <Text style={styles.validationStatusTextFailed}>Failed!</Text>
+            <TouchableOpacity style={styles.button} onPress={handleClose}>
+              <Text style={styles.buttonText}>CLOSE</Text>
+            </TouchableOpacity>
             {/* </View> */}
           </>
         )}
