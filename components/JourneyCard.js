@@ -7,7 +7,6 @@ import { BASE_URL, IMAGE_BASE_URL } from "../config";
 
 const JourneyCard = ({ journey }) => {
   const navigation = useNavigation();
-  const imageBaseUrl = `${baseUrl}/storage`;
   const imageIconLink = `${IMAGE_BASE_URL}${journey.vehicle_route_destination.vehicle.vehicle_category.icon_link}`;
 
   return (

@@ -28,6 +28,7 @@ const useValidateTicket = () => {
     // console.log("useValidateTicket hook called!");
     setLoading(true);
     try {
+      // console.log('Data: ', data);
       const response = await API.validateTicket(token, data, security);
       const statusCode = response[0];
       const res = response[1];
