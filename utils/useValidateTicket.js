@@ -7,53 +7,53 @@ const useValidateTicket = () => {
   const [loading, setLoading] = useState(false);
 
   // useEffect(() => {
-    const validateTicket = async (token, data, security, callback) => {
-      // console.log("useValidateTicket hook called!");
-      setLoading(true);
-      try {
-        const response = await API.validateTicket(token, data, security);
-        const statusCode = response[0];
-        const res = response[1];
-        const status = response[2];
+  const validateTicket = async (token, data, security, callback) => {
+    // console.log("useValidateTicket hook called!");
+    setLoading(true);
+    try {
+      const response = await API.validateTicket(token, data, security);
+      const statusCode = response[0];
+      const res = response[1];
+      const status = response[2];
 
-        // console.log("API response: ", response);
+      // console.log("API response: ", response);
 
-        if (status) {
-          setTicket(res.data);
-          if (callback) {
-            callback(res.data);
-          }
-        } else if (statusCode === 404) {
-          // toast.error(res.message);
+      if (status) {
+        setTicket(res.data);
+        if (callback) {
+          callback(res.data);
+        }
+      } else if (statusCode === 404) {
+        // console.log(res.message);
+        if (callback) {
           Toast.show({
             type: "error",
             text1: "Error",
             text2: res.message,
           });
-          if (callback) {
-            callback(ticket);
-          }
-        } else if (statusCode === 429) {
-          // toast.error("Too Many Attempts. Please try again later.");
-          Toast.show({
-            type: "error",
-            text1: "Error",
-            text2: "Too Many Attempts. Please try again later.",
-          });
+          callback(ticket);
         }
-      } catch (error) {
-        // toast.error(error.message);
+      } else if (statusCode === 429) {
+        // toast.error("Too Many Attempts. Please try again later.");
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: error.message,
+          text2: "Too Many Attempts. Please try again later.",
         });
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      // toast.error(error.message);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // validateTicket();
+  // validateTicket();
   // }, [token, data, security]);
 
   return { ticket, loading, validateTicket };

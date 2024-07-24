@@ -169,7 +169,8 @@ const styles = StyleSheet.create({
   },
   focusPoint: {
     height: "40%",
-    marginTop: "-45%",
+    marginTop: "-20%",
+    marginBottom: '25%',
     borderRadius: 20,
     position: "relative",
   },
